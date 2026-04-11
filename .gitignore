@@ -1,0 +1,22 @@
+# Next.js
+.next/
+out/
+node_modules/
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Env
+.env
+.env.local
+.env.production
+
+# NOTE: api/model.pkl MUST be committed to Git.
+# It is pre-trained and required by the Vercel serverless functions.
+# Do NOT add api/model.pkl to this file.
