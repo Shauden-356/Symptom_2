@@ -6,6 +6,7 @@ AI-powered disease prediction. Everything — frontend and backend — runs on a
 
 - **Frontend**: Next.js 14 (App Router) — React UI
 - **Backend**: Python serverless functions in `/api` — scikit-learn ML model
+- **Auto-update**: GitHub Actions retrains the model when `diseases_db.json` changes
 - **Deploy**: Vercel only
 
 ## Structure
@@ -17,28 +18,38 @@ symptom-ai/
 │   ├── page.js         Main React UI
 │   └── globals.css     All styles
 │
-├── api/                Python serverless functions → /api/*
-│   ├── _lib.py         Shared model loader
-│   ├── health.py       GET  /api/health
-│   ├── symptoms.py     GET  /api/symptoms
-│   ├── categories.py   GET  /api/categories
-│   ├── predict.py      POST /api/predict
-│   ├── questions.py    POST /api/questions
-│   ├── requirements.txt
-│   ├── model.pkl       Pre-trained model (committed to Git)
-│   ├── label_encoder.pkl
+├── app/api/            Python serverless functions → /api/*
+│   ├── _model.js       Legacy JS model (not used)
+│   ├── health/         GET  /api/health
+│   ├── symptoms/       GET  /api/symptoms
+│   ├── categories/     GET  /api/categories
+│   ├── predict/        POST /api/predict (Python)
+│   ├── questions/      POST /api/questions
+│   ├── diseases_db.json ✏️ Add diseases here
 │   ├── symptoms.json
-│   ├── diseases.json
-│   └── data/
-│       ├── diseases_db.json     ✏️ Add diseases here
-│       ├── questions_db.json    ✏️ Add UI tabs here
-│       └── symptom_labels.json  ✏️ Fix symptom names here
+│   ├── model.pkl       Auto-generated ML model
+│   ├── label_encoder.pkl
+│   └── symptoms.pkl
 │
+├── train.py            Script to manually retrain the model
+├── requirements.txt    Python dependencies
+├── .github/workflows/train.yml  Auto-retrain on data changes
 ├── package.json
 ├── next.config.js
 ├── vercel.json
 └── .gitignore
 ```
+
+## Adding Diseases
+
+Edit `app/api/diseases_db.json` to add new diseases. Each disease needs:
+- `symptoms`: array of symptom IDs (snake_case)
+- `severity`: "mild", "moderate", "severe", "critical"
+- `advice`: short medical advice text
+
+After editing, push to GitHub. GitHub Actions will automatically retrain the ML model and update `model.pkl`.
+
+For local development, run `python3 train.py` to retrain manually.
 
 ## Deploy (one command)
 
