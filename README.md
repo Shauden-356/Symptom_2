@@ -1,11 +1,11 @@
 # SymptomAI — Next.js + Vercel
 
-AI-powered disease prediction. Everything — frontend and backend — runs on a **single Vercel deployment**. No Render, no Railway, no separate backend needed.
+AI-powered disease prediction. Everything — frontend and backend — runs on a **single Vercel deployment**.
 
 ## Stack
 
-- **Frontend**: Next.js 14 (App Router) — React UI
-- **Backend**: Python serverless functions in `/api` — scikit-learn ML model
+- **Frontend**: Next.js 15 (App Router) — React UI
+- **Backend**: Python serverless functions in `/app/api` — scikit-learn ML model plus optional PyTorch training support
 - **Auto-update**: GitHub Actions retrains the model when `diseases_db.json` changes
 - **Deploy**: Vercel only
 
@@ -51,6 +51,32 @@ After editing, push to GitHub. GitHub Actions will automatically retrain the ML 
 
 For local development, run `python3 train.py` to retrain manually.
 
+## Import external datasets
+
+Use `dataset_converter.py` to convert external JSON, CSV, or TSV datasets into the app format. This script normalizes symptom text to snake_case and writes both:
+- `app/api/diseases_db.json`
+- `app/api/symptoms.json`
+
+Example conversions:
+
+```bash
+python3 dataset_converter.py --input external-diseases.csv
+python3 dataset_converter.py --input external-dataset.json --output app/api/diseases_db.json
+python3 dataset_converter.py --input external-data.tsv --merge
+```
+
+If your external dataset does not contain severity or advice, `dataset_converter.py` fills missing values with defaults so the dataset is still usable.
+
+## PyTorch training
+
+A PyTorch training script is available at `train_torch.py`.
+
+```bash
+python3 train_torch.py
+```
+
+This produces `app/api/model_torch.pth` and uses the same disease/symptom schema as the rest of the app.
+
 ## Deploy (one command)
 
 ```bash
@@ -80,12 +106,11 @@ npm run dev
 
 ## Adding a New Disease
 
-Edit `api/data/diseases_db.json`, commit and push. The model is pre-trained so you also need to retrain locally and commit the new `model.pkl`:
+Edit `app/api/diseases_db.json`, commit and push. The model is pre-trained so you also need to retrain locally and commit the new `model.pkl`:
 
 ```bash
-cd api
-python train.py   # regenerates model.pkl, symptoms.json, diseases.json
-cd ..
+python3 train.py   # regenerates model.pkl, symptoms.json
+python3 train_torch.py  # optionally train the PyTorch model too
 git add .
 git commit -m "add new disease"
 git push
