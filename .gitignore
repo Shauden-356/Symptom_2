@@ -18,8 +18,6 @@ Thumbs.db
 .env.production
 
 # Large generated files (>100MB)
-app/api/model.pkl
-app/api/label_encoder.pkl
 Final_Augmented_dataset_Diseases_and_Symptoms.csv
 diseases-and-symptoms-dataset.zip
 __pycache__/

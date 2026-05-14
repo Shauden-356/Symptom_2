@@ -34,9 +34,9 @@ y = le.fit_transform(labels)
 model = RandomForestClassifier(n_estimators=100, random_state=42)
 model.fit(df, y)
 
-# Save
-joblib.dump(model, 'app/api/model.pkl')
-joblib.dump(le, 'app/api/label_encoder.pkl')
-joblib.dump(symptoms, 'app/api/symptoms.pkl')
+# Save with compression to keep the model under GitHub file-size limits
+joblib.dump(model, 'app/api/model.pkl', compress=('gzip', 3), protocol=4)
+joblib.dump(le, 'app/api/label_encoder.pkl', compress=('gzip', 3), protocol=4)
+joblib.dump(symptoms, 'app/api/symptoms.pkl', compress=('gzip', 3), protocol=4)
 
 print(f"Trained model on {len(df)} diseases with {len(symptoms)} symptoms")
